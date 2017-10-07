@@ -7,18 +7,15 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class PaginationIteratorTest {
+public class PaginationIteratorWithSizeTest {
 
-	int index = 0;
-	Iterator<TestData> createTestData(TestData[][] data) {
-		index = 0;
-		return new PaginationIterator<TestData>() {
+	Iterator<TestData> createTestData(TestData[] data, int page) {
+		List<TestData> list = Arrays.asList(data);
+		int size = list.size();
+		return new PaginationIteratorWithSize<TestData>(size,page) {
 			@Override
-			List<TestData> nextPage(int begin) {
-				if (index < data.length) {
-					return Arrays.asList(data[index++]);
-				}
-				return null;
+			List<TestData> nextPage(int begin, int end) {
+				return list.subList(begin, end);
 			}
 		};
 	}
@@ -26,7 +23,7 @@ public class PaginationIteratorTest {
 
 	@Test
 	public void test0() {
-		Iterator<TestData> it = createTestData(new TestData[][] {});
+		Iterator<TestData> it = createTestData(new TestData[] {},10);
 		int i = 0;
 		for (TestData data : new Iterable<TestData>() {
 			public Iterator<TestData> iterator() {
@@ -40,17 +37,13 @@ public class PaginationIteratorTest {
 	}
 	@Test
 	public void test1() {
-		Iterator<TestData> it = createTestData(new TestData[][] {
-			new TestData[] {
+		Iterator<TestData> it = createTestData(new TestData[] {
 				new TestData("TEST",1),
 				new TestData("TEST",2),
-				new TestData("TEST",3)
-			},
-			new TestData[] {
+				new TestData("TEST",3),
 				new TestData("TEST",4),
 				new TestData("TEST",5)
-			}
-		});
+		},2);
 		String[] tests = new String[] {
 				"TEST1",
 				"TEST2",
@@ -70,18 +63,14 @@ public class PaginationIteratorTest {
 	}
 	@Test
 	public void test2() {
-		Iterator<TestData> it = createTestData(new TestData[][] {
-			new TestData[] {
+		Iterator<TestData> it = createTestData(new TestData[] {
 				new TestData("TEST",1),
 				new TestData("TEST",2),
-				new TestData("TEST",3)
-			},
-			new TestData[] {
+				new TestData("TEST",3),
 				new TestData("TEST",4),
 				new TestData("TEST",5),
 				new TestData("TEST",6)
-			}
-		});
+		},3);
 		String[] tests = new String[] {
 				"TEST1",
 				"TEST2",
@@ -102,18 +91,14 @@ public class PaginationIteratorTest {
 	}
 	@Test
 	public void test3() {
-		Iterator<TestData> it = createTestData(new TestData[][] {
-			new TestData[] {
+		Iterator<TestData> it = createTestData(new TestData[] {
 				new TestData("TEST",1),
 				new TestData("TEST",2),
 				new TestData("TEST",3),
-				new TestData("TEST",4)
-			},
-			new TestData[] {
+				new TestData("TEST",4),
 				new TestData("TEST",5),
 				new TestData("TEST",6)
-			}
-		});
+		},10);
 		String[] tests = new String[] {
 				"TEST1",
 				"TEST2",
@@ -134,16 +119,14 @@ public class PaginationIteratorTest {
 	}
 	@Test
 	public void test4() {
-		Iterator<TestData> it = createTestData(new TestData[][] {
-			new TestData[] {
+		Iterator<TestData> it = createTestData(new TestData[] {
 				new TestData("TEST",1),
 				new TestData("TEST",2),
 				new TestData("TEST",3),
 				new TestData("TEST",4),
 				new TestData("TEST",5),
 				new TestData("TEST",6)
-			}
-		});
+		},6);
 		String[] tests = new String[] {
 				"TEST1",
 				"TEST2",
